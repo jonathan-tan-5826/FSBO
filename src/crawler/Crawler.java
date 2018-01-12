@@ -878,27 +878,13 @@ public class Crawler {
 
 		return (filteredValue.length()) >= 10 && (filteredValue.length() <= 11);
 	}
-	
-	/**
-	 * @title writeStringToFile
-	 * @param fileName<String>,
-	 *            text<String>
-	 * @return
-	 * @desc Creates fileName, if it does not exist, in /pagesources and writes
-	 *       text to file.
-	 */
-	public static void writeStringToFile(String fileName, String text) throws Exception {
-		String directory = "./pagesources/other/";
-		
-		writeStringToFile(directory, fileName, text);
-	}
 
 	/**
 	 * @title writeStringToFile
 	 * @param fileName<String>,
 	 *            text<String>
 	 * @return
-	 * @desc Creates fileName, if it does not exist, in /pagesources and writes
+	 * @desc Creates fileName, if it does not exist, in /pagesources/directory and writes
 	 *       text to file.
 	 */
 	public static void writeStringToFile(String directory, String fileName, String text) throws Exception {
@@ -939,19 +925,23 @@ public class Crawler {
 	 */
 	public static void scrapePageSourceFromListingUrl(String state, String url) throws Exception {
 		System.out.println("Entered savePageSourceFromListingUrl");
-		// Open link in new Chrome page
-//		_secondaryDriver = new ChromeDriver();
+		
+		// Open link
 		_secondaryDriver = new CustomHtmlUnitDriver();
 		_secondaryDriver.setJavascriptEnabled(true);
 		_secondaryDriver.get(url);
 		Thread.sleep(2500);
 
-		// Get page source to work offline
+		// Get page source
 		String pageSource = _secondaryDriver.getPageSource();
 		String listingId = getListingIdFromUrl(url);
 		String fileName = listingId + ".txt";
 		String directory = "./pagesources/" + state + "/";
+		
+		// Parse the page source and save data to database
 		parseAndSaveDataFromPageSource(convertToInt(listingId), url, pageSource);
+		
+		// Write page source to file
 		writeStringToFile(directory, fileName, pageSource);
 		
 		_secondaryDriver.close();
